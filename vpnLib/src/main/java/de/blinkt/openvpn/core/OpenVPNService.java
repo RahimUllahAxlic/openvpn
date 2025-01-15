@@ -1260,9 +1260,9 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
             // CONNECTED
             // Does not work :(
             ///this commit is to check blinking notification
-//            String msg = getString(resid);
-//            showNotification(VpnStatus.getLastCleanLogMessage(this),
-//                    VpnStatus.getLastCleanLogMessage(this), channel, 0, level, intent);
+            String msg = getString(resid);
+            showNotification(VpnStatus.getLastCleanLogMessage(this),
+                    VpnStatus.getLastCleanLogMessage(this), channel, 0, level, intent);
 
         }
     }
@@ -1296,7 +1296,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
                     humanReadableByteCount(diffOut / OpenVPNManagement.mBytecountInterval, true, getResources()));
 
 
-           // showNotification( null, NOTIFICATION_CHANNEL_BG_ID, mConnecttime, LEVEL_CONNECTED, null);
+           // showNotification(netstat, null, NOTIFICATION_CHANNEL_BG_ID, mConnecttime, LEVEL_CONNECTED, null);
             // byteIn = String.format("↓%2$s", getString(R.string.statusline_bytecount),
             //         humanReadableByteCount(in, false, getResources())) + " - " + humanReadableByteCount(diffIn / OpenVPNManagement.mBytecountInterval, false, getResources()) + "/s";
             // byteOut = String.format("↑%2$s", getString(R.string.statusline_bytecount),
