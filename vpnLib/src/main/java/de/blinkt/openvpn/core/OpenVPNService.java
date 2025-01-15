@@ -436,12 +436,14 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void addVpnActionsToNotification(Notification.Builder nbuilder) {
 
-        Intent disconnectVPN = new Intent(this, DisconnectVPNActivity.class);
-        disconnectVPN.setAction(DISCONNECT_VPN);
-        PendingIntent disconnectPendingIntent = PendingIntent.getActivity(this, 0, disconnectVPN, PendingIntent.FLAG_IMMUTABLE);
+        Intent openAppIntent = new Intent();
+        openAppIntent.setClassName(getPackageName(), "net.cipherhaven.vpn.main");  // Replace with your actual MainActivity path
+        openAppIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent openAppPendingIntent = PendingIntent.getActivity(this, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE);
 
         nbuilder.addAction(R.drawable.ic_menu_close_clear_cancel,
-                getString(R.string.cancel_connection), disconnectPendingIntent);
+                getString(R.string.cancel_connection), openAppPendingIntent);
 
 //        Intent disconnectVPN = new Intent(this, DisconnectVPNActivity.class);
 //        disconnectVPN.setAction(DISCONNECT_VPN);
