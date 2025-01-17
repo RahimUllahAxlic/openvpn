@@ -330,7 +330,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, launchIntent, PendingIntent.FLAG_IMMUTABLE);
 
-        nbuilder.setContentText("this is simple text");
+        nbuilder.setContentText("Secure VPN active. Tap to configure or disconnect.");
         nbuilder.setOnlyAlertOnce(true);
         nbuilder.setOngoing(true);
         nbuilder.setSmallIcon(R.drawable.ic_notification);
@@ -435,16 +435,36 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void addVpnActionsToNotification(Notification.Builder nbuilder) {
-             
-              //this is open app button
-        // Intent openAppIntent = new Intent();
-        // openAppIntent.setClassName(getPackageName(), "net.cipherhaven.vpn.main");  // Replace with your actual MainActivity path
-        // openAppIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        // Create an Intent to open the main activity of your Flutter app
+        Intent openAppIntent = new Intent();
+        openAppIntent.setAction(Intent.ACTION_MAIN);
+        openAppIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        openAppIntent.setClassName(getPackageName(), "net.cipherhaven.vpn.main.MainActivity"); // Ensure this path matches your Flutter MainActivity
+        openAppIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        // PendingIntent openAppPendingIntent = PendingIntent.getActivity(this, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE);
+        // Create a PendingIntent to launch the app
+        PendingIntent openAppPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                openAppIntent,
+                PendingIntent.FLAG_IMMUTABLE
+        );
 
-        // nbuilder.addAction(R.drawable.ic_menu_close_clear_cancel,
-        //         getString(R.string.cancel_connection), openAppPendingIntent);
+        // Add the action to the notification
+        nbuilder.addAction(
+                R.drawable.ic_menu_close_clear_cancel,
+                getString(R.string.cancel_connection),
+                openAppPendingIntent
+        );
+//             /// this is open app button
+//         Intent openAppIntent = new Intent();
+//         openAppIntent.setClassName(getPackageName(), "net.cipherhaven.vpn.main");  // Replace with your actual MainActivity path
+//         openAppIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//
+//         PendingIntent openAppPendingIntent = PendingIntent.getActivity(this, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE);
+//
+//         nbuilder.addAction(R.drawable.ic_menu_close_clear_cancel,
+//                 getString(R.string.cancel_connection), openAppPendingIntent);
 
 // this is disconnect button
 
