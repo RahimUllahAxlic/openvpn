@@ -330,7 +330,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         Intent launchIntent = getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, launchIntent, PendingIntent.FLAG_IMMUTABLE);
 
-        nbuilder.setContentText("Secure VPN active. Tap to configure or disconnect.");
+        nbuilder.setContentText("Your online Activities are protected. Tap to configure or disconnect.");
         nbuilder.setOnlyAlertOnce(true);
         nbuilder.setOngoing(true);
         nbuilder.setSmallIcon(R.drawable.ic_notification);
@@ -1279,7 +1279,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
             // This also mean we are no longer connected, ignore bytecount messages until next
             // CONNECTED
             // Does not work :(
-            ///this commit is to check blinking notification
+
             String msg = getString(resid);
             showNotification(VpnStatus.getLastCleanLogMessage(this),
                     VpnStatus.getLastCleanLogMessage(this), channel, 0, level, intent);
