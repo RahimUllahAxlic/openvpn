@@ -159,35 +159,40 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
     private Handler guiHandler;
     private Toast mlastToast;
     private Runnable mOpenVPNThread;
-    // my code...
-    private static final long ONE_MINUTE_MILLIS = 60 * 1000; // 1 minute in milliseconds
-    private long startTime;
-    private Handler timerHandler = new Handler();
-    private Runnable timerRunnable = new Runnable() {
-        @Override
-        public void run() {
-            long currentTime = System.currentTimeMillis();
-            long elapsedTime = currentTime - startTime;
-            
-            if (elapsedTime >= ONE_MINUTE_MILLIS) {
-                // Disconnect VPN after 1 minute
-                mManagement.stopVPN(true);
-            } else {
-                // Continue checking
-                timerHandler.postDelayed(this, 1000);
-            }
+    /// my code...
+   private static long disconnectTimeMillis = 60 * 1000; // Default 1 minute
+private static long startTime;
+private static final Handler timerHandler = new Handler();
+private static final Runnable timerRunnable = new Runnable() {
+    @Override
+    public void run() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - startTime;
+        
+        if (elapsedTime >= disconnectTimeMillis) {
+            // Disconnect VPN after set time
+            VpnStatus.logInfo("Timer reached, disconnecting VPN");
+            mManagement.stopVPN(true);
+        } else {
+            // Continue checking
+            timerHandler.postDelayed(this, 1000);
         }
-    };
-
-     private void startTimer() {
-        startTime = System.currentTimeMillis();
-        timerHandler.postDelayed(timerRunnable, 0);
     }
+};
 
-    private void stopTimer() {
-        timerHandler.removeCallbacks(timerRunnable);
-    }
-//end
+public static void setDisconnectTime(long timeMillis) {
+    disconnectTimeMillis = timeMillis;
+}
+
+private void startTimer() {
+    startTime = System.currentTimeMillis();
+    timerHandler.postDelayed(timerRunnable, 0);
+}
+
+private void stopTimer() {
+    timerHandler.removeCallbacks(timerRunnable);
+}
+///end
     // From: http://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java
     public static String humanReadableByteCount(long bytes, boolean speed, Resources res) {
         if (speed)
