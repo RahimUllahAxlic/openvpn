@@ -160,7 +160,8 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
     private Toast mlastToast;
     private Runnable mOpenVPNThread;
     /// my code...
-    static long ONE_MINUTE_MILLIS = 60 * 1000; // 1 minute in milliseconds
+    static long ONE_MINUTE_MILLIS = 60 * 1000; // 1 minute
+   private static long WARNING_TIME = 100 * 1000;
     private long startTime;
     private Handler timerHandler = new Handler();
     public static void setDisconnectTimer(long timeMillis) {
@@ -172,11 +173,18 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         public void run() {
             long currentTime = System.currentTimeMillis();
             long elapsedTime = currentTime - startTime;
-
+            long remainingTime = ONE_MINUTE_MILLIS - elapsedTime;
             if (elapsedTime >= ONE_MINUTE_MILLIS) {
-                // Disconnect VPN after 1 minute
+                
+                showDisconnectNotification();
                 mManagement.stopVPN(true);
-            } else {
+            } 
+            else if (remainingTime <= WARNING_TIME && remainingTime > (WARNING_TIME - 1000)) {
+            // Show warning when exactly 10 minutes remain
+            showWarningNotification();
+            timerHandler.postDelayed(this, 1000);
+        }
+            else {
                 // Continue checking
                 timerHandler.postDelayed(this, 1000);
             }
@@ -190,7 +198,63 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
     private void stopTimer() {
         timerHandler.removeCallbacks(timerRunnable);
     }
-    //end
+
+    private void showDisconnectNotification() {
+    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        NotificationChannel channel = new NotificationChannel(
+            "vpn_disconnect",
+            "VPN Disconnect",
+            NotificationManager.IMPORTANCE_HIGH
+        );
+        notificationManager.createNotificationChannel(channel);
+    }
+
+    Notification.Builder builder;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        builder = new Notification.Builder(this, "vpn_disconnect");
+    } else {
+        builder = new Notification.Builder(this);
+    }
+
+    builder.setContentTitle("Session Ended!")
+           .setContentText("Your session has expired. Please tap here to reconnect...")
+           .setSmallIcon(android.R.drawable.ic_dialog_alert)
+           .setAutoCancel(true);
+
+    notificationManager.notify(2, builder.build());
+}
+
+ private void showWarningNotification() {
+    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        NotificationChannel channel = new NotificationChannel(
+            "vpn_warning",
+            "VPN Warning",
+            NotificationManager.IMPORTANCE_HIGH
+        );
+        notificationManager.createNotificationChannel(channel);
+    }
+
+    Notification.Builder builder;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        builder = new Notification.Builder(this, "vpn_warning");
+    } else {
+        builder = new Notification.Builder(this);
+    }
+
+    builder.setContentTitle("Time is Running Out!")
+           .setContentText("Hurry! Only 10 minutes left in your session. Watch ad to keep going!")
+           .setSmallIcon(android.R.drawable.ic_dialog_alert)
+           .setAutoCancel(true);
+
+    notificationManager.notify(3, builder.build());
+}
+
+    ///end
+    
     // From: http://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java
     public static String humanReadableByteCount(long bytes, boolean speed, Resources res) {
         if (speed)
