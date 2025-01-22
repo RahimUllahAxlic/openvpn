@@ -161,7 +161,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
     private Runnable mOpenVPNThread;
     /// my code...
     static long ONE_MINUTE_MILLIS = 60 * 1000; // 1 minute
-   private static long WARNING_TIME = 100 * 1000;
+   private static long WARNING_TIME = 100 * 1000; // 10 minutes
     private long startTime;
     private Handler timerHandler = new Handler();
     public static void setDisconnectTimer(long timeMillis) {
@@ -173,17 +173,17 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         public void run() {
             long currentTime = System.currentTimeMillis();
             long elapsedTime = currentTime - startTime;
-            long remainingTime = ONE_MINUTE_MILLIS - elapsedTime;
+            //long remainingTime = ONE_MINUTE_MILLIS - elapsedTime;
             if (elapsedTime >= ONE_MINUTE_MILLIS) {
                 
                 showDisconnectNotification();
                 mManagement.stopVPN(true);
             } 
-            else if (remainingTime <= WARNING_TIME && remainingTime > (WARNING_TIME - 1000)) {
+            /*else if (remainingTime == WARNING_TIME) {
             // Show warning when exactly 10 minutes remain
             showWarningNotification();
             timerHandler.postDelayed(this, 1000);
-        }
+        }*/
             else {
                 // Continue checking
                 timerHandler.postDelayed(this, 1000);
@@ -201,7 +201,17 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
     private void showDisconnectNotification() {
     NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    
+        // Create intent to launch app
+        Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        // Create pending intent
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE
+        );
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         NotificationChannel channel = new NotificationChannel(
             "vpn_disconnect",
@@ -221,7 +231,8 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
     builder.setContentTitle("Session Ended!")
            .setContentText("Your session has expired. Please tap here to reconnect...")
            .setSmallIcon(R.drawable.ic_notification_icon)
-           .setAutoCancel(true);
+           .setAutoCancel(true)
+           .setContentIntent(pendingIntent);
 
     notificationManager.notify(2, builder.build());
 }
