@@ -220,13 +220,13 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
     builder.setContentTitle("Session Ended!")
            .setContentText("Your session has expired. Please tap here to reconnect...")
-           .setSmallIcon(android.R.drawable.ic_dialog_alert)
+           .setSmallIcon(R.drawable.ic_notification_icon)
            .setAutoCancel(true);
 
     notificationManager.notify(2, builder.build());
 }
 
- private void showWarningNotification() {
+    private void showWarningNotification() {
     NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -247,7 +247,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
     builder.setContentTitle("Time is Running Out!")
            .setContentText("Hurry! Only 10 minutes left in your session. Watch ad to keep going!")
-           .setSmallIcon(android.R.drawable.ic_dialog_alert)
+           .setSmallIcon(R.drawable.ic_notification_icon)
            .setAutoCancel(true);
 
     notificationManager.notify(3, builder.build());
@@ -428,7 +428,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         nbuilder.setContentText("Your online Activities are protected. Tap to configure or disconnect.");
         nbuilder.setOnlyAlertOnce(true);
         nbuilder.setOngoing(true);
-        nbuilder.setSmallIcon(R.drawable.ic_notification);
+        nbuilder.setSmallIcon(R.drawable.ic_notification_icon);
         nbuilder.setContentIntent(pendingIntent);
 
         if (when != 0) nbuilder.setWhen(when);
